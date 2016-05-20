@@ -19,7 +19,7 @@ var init = function(){
 		padding:{
 			'l':200,
 			'r':30,
-			'b':30,
+			'b':90,
 			't':450
 		},
 
@@ -97,7 +97,7 @@ var init = function(){
 					.range([self.padding.t,(self.h -self.padding.b)]),
 				scale_vt = d3.scale.linear()
 					.domain([0,data_shells_max])
-					.range([self.padding.t/2,self.padding.b]);
+					.range([self.padding.t/2,self.padding.b/3]);
 
 			//define all shape variables
 			var linesG,
