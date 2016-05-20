@@ -3,6 +3,7 @@ body {
 	display:block;
 	width:100%;
 	height:100%;
+	background:black;
 	margin:0;
 	padding:0;
 	}
@@ -10,6 +11,22 @@ body {
 div {
 	float:left;
 	display:block;
+	}
+
+svg {
+	shape-rendering:geometricPrecision;
+	}
+
+#title {
+	position:absolute;
+	color:white;
+	font-family:'Arial',sans-serif;
+	font-size:9px;
+	letter-spacing:1px;
+	text-transform:uppercase;
+	left:30px;
+	bottom:30px;
+	z-index:1000;
 	}
 
 #container {
@@ -22,7 +39,39 @@ div {
 #vis {
 	display:block;
 	width:100%;
+	height:100%;
 	background:black;
 	margin:0 auto;
 	padding:0;
+	}
+
+.dots_higher,
+.dots_lower {
+	fill:white;
+	stroke:none;
+	}
+.dots_higherG.focus .dots_higher{
+	fill:red;
+	}
+.dots_lower.focus {
+	fill:red;
+	stroke:white;
+	}
+
+.linesG {
+	cursor:pointer;
+	}
+.linesG .connectors {
+	stroke:white;
+	stroke-width:1;
+	stroke-opacity:0.5;
+	fill:none;
+	}
+.connectors.MN {
+	}
+.connectors.BR {
+	}
+
+.linesG.focus .connectors {
+	stroke:red;
 	}
