@@ -18,7 +18,7 @@ var init = function(){
 
 		padding:{
 			'l':200,
-			'r':30,
+			'r':90,
 			'b':90,
 			't':450
 		},
@@ -114,6 +114,61 @@ var init = function(){
 				dots_higher_spacing = 0.5
 				;
 
+			var axisYG,
+				axisY,
+				axisY_txt,
+				axisY_label,
+
+				axisFactor = 14;
+
+			//axes
+			axisYG = self.svg.selectAll('g.axisYG')
+				.data([d3.range(axisFactor)]);
+			axisYG.enter().append('g')
+				.classed('axisYG',true);
+			axisYG.exit().remove();
+			axisY = axisYG.selectAll('line.tickY')
+				.data(function(d){ return d; });
+			axisY.enter().append('line')	
+				.classed('tickY',true);
+			axisY
+				.attr('x1',54)
+				.attr('y1',function(d){
+					return scale_v(d*3);
+				})
+				.attr('x2',self.w)
+				.attr('y2',function(d){
+					return scale_v(d*3);
+				});
+			axisY.exit().remove();
+			axisY_txt = axisYG.selectAll('text.axisY_txt')
+				.data(function(d){ return d; });
+			axisY_txt.enter().append('text')	
+				.classed('axisY_txt',true);
+			axisY_txt
+				.classed('axt',true)
+				.attr('x',30)
+				.attr('y',function(d){
+					return scale_v(d*3) +3;
+				})
+				.text(function(d){
+					return d*3;
+				});
+			axisY_txt.exit().remove();
+			axisY_label = axisYG.selectAll('text.axisY_label')
+				.data(['No. properties owned']);
+			axisY_label.enter().append('text')
+				.classed('axisY_label',true);
+			axisY_label
+				.classed('axt',true)
+				.attr('x',30)
+				.attr('y',function(d){
+					return scale_v(0) -21;
+				})
+				.text(function(d){ return d; })
+				;
+			axisY_label.exit().remove();
+
 			//plot lines first
 			linesG = self.svg.selectAll('g.linesG')
 				.data(data_shells);
@@ -125,11 +180,24 @@ var init = function(){
 				});
 			linesG
 				.on('mouseover',function(d){
+					var coords = [0,0];
+					coords = d3.mouse(this);
+
 					d3.selectAll('.focus').classed('focus',false);
 					d3.selectAll('.' +d.key).classed('focus',true);
+					updateHover(d,true,coords[0],coords[1]);
+				})
+				.on('mousemove',function(d){
+					var coords = [0,0];
+					coords = d3.mouse(this);
+
+					d3.selectAll('.focus').classed('focus',false);
+					d3.selectAll('.' +d.key).classed('focus',true);
+					updateHover(d,true,coords[0],coords[1]);
 				})
 				.on('mouseout',function(d){
 					d3.selectAll('.focus').classed('focus',false);
+					updateHover(d,false);
 				})
 			linesG.exit().remove();
 			lines = linesG.selectAll('line.connectors')
@@ -209,6 +277,84 @@ var init = function(){
 				.attr('width',dots_lower_w)
 				.attr('height',dots_lower_h);
 			dots_lower.exit().remove();
+
+			//hover element
+			var hoverG,
+				hoverRect,
+				hoverTitle,
+				hoverList;
+
+			function boroughfy(_list){
+				var newlist = {},
+					newstr = [];
+				_list.forEach(function(d){
+					if(!newlist[d.Borough]){
+						newlist[d.Borough] = 0;
+					}
+					newlist[d.Borough]++;
+				});
+				d3.entries(newlist).forEach(function(d){
+					var str = d.key + ' — ' +d.value;
+					newstr.push(str);
+				});
+				return newstr;
+			}
+
+			function updateHover(_d,_show,_x,_y){
+				var xpos = _x || 0,
+					ypos = _y || 0;
+				hoverG = self.svg.selectAll('g.hoverG')
+					.data([_d]);
+				hoverG.enter().append('g')
+					.classed('hoverG',true);
+				hoverG
+					.classed('show',_show);
+				hoverG
+					.attr('transform',function(d){
+						var x = xpos -(192/2),
+							y = ypos +30;
+						return 'translate(' +x +',' +y +')';
+					});
+				hoverG.exit().remove();
+				hoverRect = hoverG.selectAll('rect.hoverRect')
+					.data(function(d){ return [d]; });
+				hoverRect.enter().append('rect')
+					.classed('hoverRect',true);
+				hoverRect
+					.attr('x',0)
+					.attr('y',0)
+					.attr('width',192)
+					.attr('height',function(d){
+						return 39 +(d.value ? boroughfy(d.value).length*15 : 0);
+					});
+				hoverRect.exit().remove();
+				hoverTitle = hoverG.selectAll('text.hoverTitle')
+					.data(function(d){ return [d]; });
+				hoverTitle.enter().append('text')
+					.classed('hoverTitle',true);
+				hoverTitle
+					.attr('x',15)
+					.attr('y',18)
+					.text(function(d){
+						return d.value ? d.value[0].OwnerName +'... [' +d.value[0].OwnerType + ']' : '';
+					});
+				hoverTitle.exit().remove();
+				hoverList = hoverG.selectAll('text.hoverList')
+					.data(function(d){ return d.value ? boroughfy(d.value) : []; });
+				hoverList.enter().append('text')
+					.classed('hoverList',true);
+				hoverList
+					.attr('x',15)
+					.attr('y',function(d,i){
+						return 40 +(i*15);
+					})
+					.text(function(d){
+						return d;
+					});
+				hoverList.exit().remove();
+			}
+
+			updateHover(data_shells[0],false,0,0);
 		}
 	}
 }
