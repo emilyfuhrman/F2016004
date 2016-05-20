@@ -361,3 +361,9 @@ var init = function(){
 
 var vis = init();
 vis.generate();
+
+window.onresize = function(){
+	vis.w = window.innerWidth;
+	vis.h = window.innerHeight;
+	vis.draw();
+}
