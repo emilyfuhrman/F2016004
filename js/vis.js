@@ -336,7 +336,7 @@ var init = function(){
 					.attr('x',15)
 					.attr('y',18)
 					.text(function(d){
-						return d.value ? d.value[0].OwnerName +'... [' +d.value[0].OwnerType + ']' : '';
+						return d.value ? d.value[0].Address : '';
 					});
 				hoverTitle.exit().remove();
 				hoverList = hoverG.selectAll('text.hoverList')
